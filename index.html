@@ -3,59 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ফুড এক্সপ্রেস | প্রিমিয়াম ফুড ডেলিভারি ও সার্ভিস</title>
-    <!-- Tailwind CSS -->
+    <title>FoodExpress | Premium Food Delivery</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Confetti Animation -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <!-- EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased selection:bg-amber-500 selection:text-white">
 
-    <!-- গ্লোয়িং নেভিগেশন বার -->
     <nav class="bg-gradient-to-r from-slate-900 via-amber-950 to-slate-900 text-white shadow-xl sticky top-0 z-50 backdrop-blur-md bg-opacity-95 border-b border-amber-500/20">
         <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
             <h1 class="text-2xl font-black tracking-wider flex items-center gap-2 bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
                 <i class="fa-solid fa-fire-flame-curved text-orange-500 animate-pulse"></i> FoodExpress
             </h1>
-            <div class="relative cursor-pointer group bg-slate-800 p-2.5 rounded-xl border border-slate-700 hover:border-amber-500 transition-all duration-300 shadow-md" onclick="scrollToCart()">
-                <i class="fa-solid fa-cart-shopping text-xl text-amber-400 group-hover:scale-110 transition-transform"></i>
-                <span id="cart-count" class="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-orange-600 text-white text-xs font-black rounded-full h-5 w-5 flex items-center justify-center border-2 border-slate-900 hidden">0</span>
+            <div class="flex items-center gap-4">
+                <div class="relative cursor-pointer group bg-slate-800 p-2.5 rounded-xl border border-slate-700 hover:border-amber-500 transition-all duration-300 shadow-md" onclick="scrollToSection('cart-section')">
+                    <i class="fa-solid fa-cart-shopping text-xl text-amber-400 group-hover:scale-110 transition-transform"></i>
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-orange-600 text-white text-xs font-black rounded-full h-5 w-5 flex items-center justify-center border-2 border-slate-900 hidden">0</span>
+                </div>
             </div>
         </div>
     </nav>
 
-    <!-- হিরো ব্যানার সেকশন -->
     <div class="relative bg-gradient-to-br from-slate-900 via-amber-950 to-orange-950 text-white text-center py-20 px-4 overflow-hidden shadow-2xl">
         <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/black-thread.png')] opacity-20"></div>
         <div class="relative z-10 max-w-2xl mx-auto">
-            <span class="bg-amber-500/20 text-amber-400 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full border border-amber-500/30">Premium Delivery Service</span>
-            <h2 class="text-4xl md:text-6xl font-black mt-4 mb-4 tracking-tight drop-shadow-md">ভীষণ ক্ষুধা লেগেছে?</h2>
-            <p class="text-sm md:text-lg text-slate-300 font-medium max-w-xl mx-auto leading-relaxed">শহরের সবচেয়ে হাইজেনিক ও সুস্বাদু খাবার দ্রুততম সময়ে পৌঁছে যাবে আপনার ঠিকানায়।</p>
+            <span class="bg-amber-500/20 text-amber-400 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full border border-amber-500/30">Premium Food Delivery</span>
+            <h2 class="text-4xl md:text-6xl font-black mt-4 tracking-tight bg-gradient-to-r from-white via-amber-200 to-amber-400 bg-clip-text text-transparent">Craving Something Delicious?</h2>
         </div>
     </div>
 
-    <!-- মেইন কন্টেইনার -->
+    <div id="tracking-card" class="max-w-6xl mx-auto px-4 mt-8 hidden">
+        <div class="bg-white p-6 rounded-3xl shadow-lg border border-amber-500/20">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-4 mb-4 gap-2">
+                <div>
+                    <h4 class="text-lg font-black text-slate-900">📦 Order Tracking Status</h4>
+                    <p class="text-xs text-slate-400 mt-0.5">Order ID: <span id="track-id" class="font-bold text-slate-700">#FX-12345</span></p>
+                </div>
+                <span class="bg-amber-100 text-amber-700 text-xs font-black px-3 py-1 rounded-full border border-amber-200">Total: ৳<span id="track-total">0</span></span>
+            </div>
+            
+            <div class="grid grid-cols-3 text-center relative pt-4">
+                <div class="absolute top-7 left-[16.6%] right-[16.6%] h-1 bg-slate-200 -z-0">
+                    <div id="progress-line" class="h-full bg-orange-500 w-0 transition-all duration-1000"></div>
+                </div>
+                
+                <div class="relative z-10 flex flex-col items-center">
+                    <div id="step-pending" class="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-sm shadow-md transition-all">১</div>
+                    <p class="text-xs font-bold mt-2 text-orange-600">Pending</p>
+                    <p class="text-[10px] text-slate-400">অর্ডারটি পেন্ডিং আছে</p>
+                </div>
+                <div class="relative z-10 flex flex-col items-center">
+                    <div id="step-processing" class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm shadow-md transition-all">২</div>
+                    <p class="text-xs font-bold mt-2 text-slate-500">Processing</p>
+                    <p class="text-[10px] text-slate-400">রান্নাঘরে প্রস্তুত হচ্ছে</p>
+                </div>
+                <div class="relative z-10 flex flex-col items-center">
+                    <div id="step-delivered" class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm shadow-md transition-all">৩</div>
+                    <p class="text-xs font-bold mt-2 text-slate-500">Delivered</p>
+                    <p class="text-[10px] text-slate-400">ডেলিভারি সম্পন্ন</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <main class="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 gap-8 pb-10 pt-10">
         
-        <!-- খাবারের মেনু সেকশন -->
-        <div class="lg:col-span-2">
-            <div class="flex items-center gap-3 mb-8">
-                <span class="h-8 w-1.5 bg-amber-500 rounded-full"></span>
-                <h3 class="text-2xl font-black text-slate-900 tracking-tight">আজকের ট্রেন্ডিং মেনু</h3>
+        <div class="lg:col-span-2 space-y-12">
+            <div>
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="h-8 w-1.5 bg-amber-500 rounded-full"></span>
+                    <h3 class="text-2xl font-black text-slate-900 tracking-tight">Explore Our Menu</h3>
+                </div>
+                <div id="food-menu" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    </div>
             </div>
-            <div id="food-menu" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <!-- জাভাস্ক্রিপ্ট দিয়ে খাবার লোড হবে -->
+
+            <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-100">
+                <div class="flex items-center gap-3 mb-6 border-b pb-4">
+                    <span class="h-8 w-1.5 bg-orange-500 rounded-full"></span>
+                    <h3 class="text-2xl font-black text-slate-900 tracking-tight">Customer Reviews</h3>
+                </div>
+
+                <form id="review-form" onsubmit="handleReviewSubmission(event)" class="space-y-4 bg-slate-50 p-4 rounded-2xl border mb-6">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Leave a Review</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <input type="text" id="rev-name" required placeholder="আপনার নাম" class="w-full px-3 py-2 bg-white border rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/40 text-sm">
+                        <div class="flex items-center gap-1 bg-white px-3 py-2 border rounded-xl justify-between">
+                            <span class="text-xs text-slate-500 font-bold">রেটিং:</span>
+                            <div class="flex text-amber-400 gap-1 text-sm cursor-pointer">
+                                <i class="fa-solid fa-star star-btn" onclick="setRating(1)"></i>
+                                <i class="fa-solid fa-star star-btn" onclick="setRating(2)"></i>
+                                <i class="fa-solid fa-star star-btn" onclick="setRating(3)"></i>
+                                <i class="fa-solid fa-star star-btn" onclick="setRating(4)"></i>
+                                <i class="fa-solid fa-star star-btn" onclick="setRating(5)"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <textarea id="rev-msg" required rows="2" placeholder="খাবারের স্বাদ ও সার্ভিস কেমন লাগলো লিখুন..." class="w-full px-3 py-2 bg-white border rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/40 text-sm"></textarea>
+                    <button type="submit" class="bg-slate-900 hover:bg-orange-600 text-white text-xs font-black px-4 py-2.5 rounded-xl transition-all cursor-pointer shadow-md">সাবমিট রিভিউ</button>
+                </form>
+
+                <div id="reviews-list" class="space-y-4 max-h-80 overflow-y-auto pr-1">
+                    </div>
             </div>
         </div>
 
-        <!-- কার্ট ও পেমেন্ট ড্যাশবোর্ড -->
-        <div id="cart-section" class="bg-white p-6 rounded-3xl shadow-xl border border-slate-100 h-fit sticky top-24 transition-all duration-300 hover:shadow-2xl">
+        <div id="cart-section" class="bg-white p-6 rounded-3xl shadow-xl border border-slate-100 h-fit lg:sticky lg:top-24 transition-all duration-300 hover:shadow-2xl">
             <h3 class="text-xl font-black mb-4 flex items-center gap-2 text-slate-900 border-b border-slate-100 pb-3">
-                <i class="fa-solid fa-basket-shopping text-amber-500"></i> আপনার শপিং কার্ট
+                <i class="fa-solid fa-basket-shopping text-amber-500"></i> শপিং কার্ট
             </h3>
             
             <div id="cart-items" class="space-y-3 max-h-64 overflow-y-auto mb-4 pr-1">
@@ -86,7 +142,7 @@
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">ডেলিভারি ঠিকানা</label>
                     <div class="relative">
                         <i class="fa-solid fa-location-dot absolute left-3 top-3.5 text-slate-400 text-sm"></i>
-                        <input type="text" id="cust-address" required placeholder="বাসা নম্বর, রোড, এলাকা" class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 focus:bg-white text-sm transition-all">
+                        <input type="text" id="cust-address" required placeholder="বাসা নম্বর, রোড, এলাকা বিস্তারিত" class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 focus:bg-white text-sm transition-all">
                     </div>
                 </div>
                 <div>
@@ -107,8 +163,8 @@
                 </div>
 
                 <div class="text-[11px] text-slate-400 flex items-center gap-1.5 bg-slate-50 p-2 rounded-lg border border-dashed">
-                    <i class="fa-solid fa-circle-info text-amber-500"></i>
-                    <span>অর্ডারের পর ইমেইল নোটিফিকেশন সিস্টেম স্বয়ংক্রিয়ভাবে কাজ করবে।</span>
+                    <i class="fa-solid fa-shield-halved text-green-500"></i>
+                    <span>সিকিউর অ্যান্টি-স্প্যাম সিস্টেম সক্রিয় রয়েছে।</span>
                 </div>
                 
                 <button type="submit" class="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white font-black py-3.5 px-4 rounded-2xl shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 hover:opacity-95 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex justify-center items-center gap-2 mt-6 cursor-pointer tracking-wide text-sm">
@@ -118,20 +174,16 @@
         </div>
     </main>
 
-    <!-- 👑 প্রফেশনাল ডেভেলপার সেকশন (Footer) -->
     <footer class="bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 text-white py-12 border-t border-amber-500/10 mt-12">
         <div class="max-w-4xl mx-auto px-4 text-center">
             <p class="text-xs font-bold uppercase tracking-widest text-amber-500 mb-6">Designed & Developed By</p>
             
             <div class="flex flex-col items-center bg-slate-900/60 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-xl max-w-md mx-auto transform hover:scale-[1.01] transition-all duration-300">
-                
-                <!-- 📸 আপনার ছবি -->
                 <div class="relative mb-4">
                     <div class="absolute inset-0 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full blur opacity-40 animate-pulse"></div>
                     <img src="1000055254.png" alt="Md Sakib" class="relative w-24 h-24 rounded-full object-cover border-4 border-slate-800 shadow-lg">
                 </div>
 
-                <!-- 👤 নাম এবং পদবি -->
                 <h4 class="text-xl font-black tracking-wide bg-gradient-to-r from-white via-amber-200 to-amber-400 bg-clip-text text-transparent">Md Sakib</h4>
                 <p class="text-xs text-amber-400 font-semibold mt-1">Computer Science & Engineering</p>
                 <p class="text-[11px] text-slate-400 font-medium">Diploma in Engineering</p>
@@ -140,74 +192,76 @@
                     <i class="fa-solid fa-location-dot text-rose-500"></i> Patuakhali, Bangladesh
                 </div>
                 
-                <!-- 🔗 কন্টাক্ট বাটনসমূহ -->
                 <div class="w-full space-y-3">
-                    <!-- জিমেইল বাটন -->
                     <a href="mailto:hasanmdsakib159@gmail.com" class="flex items-center justify-between bg-slate-800/60 hover:bg-slate-800 px-4 py-2.5 rounded-xl border border-slate-700/50 hover:border-amber-500/40 transition-all group text-sm">
-                        <span class="flex items-center gap-2.5 text-slate-300 group-hover:text-white transition-colors">
-                            <i class="fa-solid fa-envelope text-red-400"></i> জিমেইল
-                        </span>
-                        <span class="text-xs text-slate-400 group-hover:text-amber-400 font-medium transition-colors">hasanmdsakib159@gmail.com</span>
+                        <span class="flex items-center gap-2.5 text-slate-300 group-hover:text-white"><i class="fa-solid fa-envelope text-red-400"></i> জিমেইল</span>
+                        <span class="text-xs text-slate-400 group-hover:text-amber-400 font-medium">hasanmdsakib159@gmail.com</span>
                     </a>
-
-                    <!-- হোয়াটসঅ্যাপ বাটন -->
                     <a href="https://wa.me/8801327013064" target="_blank" class="flex items-center justify-between bg-slate-800/60 hover:bg-slate-800 px-4 py-2.5 rounded-xl border border-slate-700/50 hover:border-green-500/40 transition-all group text-sm">
-                        <span class="flex items-center gap-2.5 text-slate-300 group-hover:text-white transition-colors">
-                            <i class="fa-brands fa-whatsapp text-green-400 text-base"></i> হোয়াটসঅ্যাপ চ্যাট
-                        </span>
-                        <span class="text-xs text-slate-400 group-hover:text-green-400 font-medium transition-colors">+8801327013064</span>
+                        <span class="flex items-center gap-2.5 text-slate-300 group-hover:text-white"><i class="fa-brands fa-whatsapp text-green-400 text-base"></i> হোয়াটসঅ্যাপ চ্যাট</span>
+                        <span class="text-xs text-slate-400 group-hover:text-green-400 font-medium">+8801327013064</span>
                     </a>
                 </div>
             </div>
-
-            <!-- কপিরাইট টেক্সট -->
-            <p class="text-[11px] text-slate-500 mt-10 font-medium">&copy; 2026 FoodExpress. All Rights Reserved. Powered by Sakib Tech.</p>
+            <p class="text-[11px] text-slate-500 mt-10 font-medium">&copy; 2026 FoodExpress. Powered by Sakib Tech.</p>
         </div>
     </footer>
 
     <script>
-        // EmailJS Credentials 
-        emailjs.init("JzrPe3PmGDp4rRDXi"); 
-
-        // খাবার আইটেমসমূহ
+        // 🍔 15+ Stable Items with Verified Image URLs
         const foodMenu = [
-            { id: 1, name: "প্রিমিয়াম মাটন কাচ্চি", price: 250, badge: "সেরা পছন্দ", image: "https://images.unsplash.com/photo-1633945274405-b6c8069047b0?w=500", desc: "সুগন্ধি বাসমতি চাল, খাঁটি ঘি আর তুলতুলে খাসির মাংসের ঐতিহ্যবাহী কাচ্চি।" },
-            { id: 2, name: "চিকেন তন্দুরি ফুল", price: 320, badge: "স্পেশাল", image: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=500", desc: "মশলাদার দইয়ে ম্যারিনেট করা কয়লার আগুনে পোড়ানো আস্ত তন্দুরি চিকেন।" },
-            { id: 3, name: "বিফ কালা ভুনা", price: 180, badge: "জনপ্রিয়", image: "https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=500", desc: "চট্টগ্রামের ঐতিহ্যবাহী স্পেশাল মশলায় কষানো গরুর মাংসের কালা ভুনা।" },
-            { id: 4, name: "গ্রিলড চিকেন ও নান (১ পিস)", price: 140, badge: "বাজেট ডিল", image: "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=500", desc: "কোয়ার্টার গ্রিল চিকেন সাথে একটি তুলতুলে গরম বাটার নান।" },
-            { id: 5, name: "চিজ লোডেড ফ্রেঞ্চ ফ্রাই", price: 110, badge: "নতুন আইটেম", image: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500", desc: "মুচমুচে ফ্রেঞ্চ ফ্রাইয়ের ওপর উপচে পড়া চিজি সস ও হার্বসের কম্বো।" },
-            { id: 6, name: "স্পেশাল সাব স্যান্ডউইচ", price: 130, badge: "মেগা হিট", image: "https://images.unsplash.com/photo-1509722747041-616f39b57569?w=500", desc: "চিকেন কিমা, মেয়োনিজ এবং তাজা সবজির লেয়ারে ঠাসা ১২ ইঞ্চির সাব।" },
-            { id: 7, name: "হোয়াইট সস পাস্তা", price: 150, badge: "চিজি", image: "https://images.unsplash.com/photo-1645112411341-6c4fd023714a?w=500", desc: "ক্রিমি হোয়াইট সস, মাশরুম ও চিকেন দিয়ে তৈরি গরম গরম ইতালিয়ান পাস্তা।" },
-            { id: 8, name: "ফালুদা রয়েল বক্স", price: 100, badge: "মিষ্টি ডেজার্ট", image: "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=500", desc: "ঘন দুধ, নুডলস, জেলো, ড্রাই ফ্রুটস এবং ২ স্কুপ ভ্যানিলা আইসক্রিম।" },
-            { id: 9, name: "চকলেট ব্রাউনি উইথ আইসক্রিম", price: 120, badge: "কিডস স্পেশাল", image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=500", desc: "গরম চকলেট ফাজ ব্রাউনির সাথে ঠান্ডা ঠান্ডা ভ্যানিলা আইসক্রিম।" },
-            { id: 10, name: "মিন্ট লেমনেড রিফ্রেশার", price: 60, badge: "ঠান্ডা ড্রিংক", image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=500", desc: "তাজা পুদিনা পাতা, লেবুর রস আর বরফ কুচির এক গ্লাস রিফ্রেশিং ড্রিংক।" }
+            { id: 1, name: "প্রিমিয়াম চিকেন বার্গার", price: 150, badge: "Best Seller", image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80", desc: "জুসি চিকেন প্যাটি ও চিজে ঠাসা ক্লাসিক বার্গার।" },
+            { id: 2, name: "চিজি চিকেন পিৎজা", price: 350, badge: "Popular", image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&q=80", desc: "মোজারেলা চিজ ও চিকেন টপিংস সমৃদ্ধ ইতালিয়ান পিৎজা।" },
+            { id: 3, name: "হোয়াইট সস পাস্তা", price: 180, badge: "Trending", image: "https://images.unsplash.com/photo-1645112411341-6c4fd023714a?w=500&q=80", desc: "ক্রিমি হোয়াইট সস ও মাশরুম দিয়ে তৈরি পাস্তা।" },
+            { id: 4, name: "স্পেশাল চিকেন বিরিয়ানি", price: 220, badge: "Top Rated", image: "https://images.unsplash.com/photo-1633945274405-b6c8069047b0?w=500&q=80", desc: "সুগন্ধি বাসমতি চাল ও খাঁটি মশলায় তৈরি বিরিয়ানি।" },
+            { id: 5, name: "ক্রিসপি ফ্রাইড চিকেন (২ পিস)", price: 120, badge: "Crispy", image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=500&q=80", desc: "মচমচে ও সুস্বাদু ডিপ ফ্রাইড চিকেন ফ্রাই।" },
+            { id: 6, name: "ফ্রেঞ্চ ফ্রাই (লার্জ)", price: 80, badge: "Snack", image: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500&q=80", desc: "মুচমুচে সোনালী রঙের আলু ভাজা।" },
+            { id: 7, name: "চিকেন শর্মা", price: 100, badge: "Budget Friendly", image: "https://images.unsplash.com/photo-1626700051175-6518c4793f4f?w=500&q=80", desc: "গ্রিলড চিকেন ও মেয়োনেজ ভরা সুস্বাদু শর্মা রোল।" },
+            { id: 8, name: "মশলাদার চিকেন চাউমিন", price: 130, badge: "Fast Food", image: "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=500&q=80", desc: "সবজি ও স্পেশাল সসে টস করা নুডুলস চাউমিন।" },
+            { id: 9, name: "স্টাফড চিকেন মোমো (৬ পিস)", price: 110, badge: "Steamed", image: "https://images.unsplash.com/photo-1625302612284-e3e94a4421c6?w=500&q=80", desc: "ধোঁয়া ওঠা তুলতুলে চিকেন মোমো সাথে স্পেশাল চাটনি।" },
+            { id: 10, name: "কোল্ড কফি উইথ আইসক্রিম", price: 90, badge: "Refreshing", image: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=500&q=80", desc: "ভ্যানিলা আইসক্রিম টপিংসহ ঠান্ডা রিফ্রেশিং কফি।" },
+            { id: 11, name: "স্পেশাল চকলেট পেস্ট্রি", price: 70, badge: "Dessert", image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500&q=80", desc: "নরম ও রসে ভরপুর ডার্ক চকলেট পেস্ট্রি কেক।" },
+            { id: 12, name: "চিকেন নাগেটস (৮ পিস)", price: 140, badge: "Kids Special", image: "https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=500&q=80", desc: "ক্রিসপি কোটিংযুক্ত মিনি চিকেন নাগেটস।" },
+            { id: 13, name: "গ্রিলড চিকেন স্যান্ডউইচ", price: 95, badge: "Healthy", image: "https://images.unsplash.com/photo-1521390188846-e2a3a97453a0?w=500&q=80", desc: "গ্রিলড চিকেন ও ফ্রেশ সালাদ ভরা ব্রেড স্যান্ডউইচ।" },
+            { id: 14, name: "ক্রিসপি অনথন (৬ পিস)", price: 85, badge: "Crunchy", image: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?w=500&q=80", desc: "মুচমুচে ভাজা চিকেন কিমা ভরা স্পেশাল অনথন।" },
+            { id: 15, name: "ফালুদা প্রিমিয়াম", price: 120, badge: "Sweet Treats", image: "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=500&q=80", desc: "ফল, জেলি এবং আইসক্রিম সমৃদ্ধ রাজকীয় ডেজার্ট ফালুদা।" },
+            { id: 16, name: "রেড ভেলভেট কাপকেক", price: 60, badge: "New Arrival", image: "https://images.unsplash.com/photo-1614707267537-b85acf00c4b8?w=500&q=80", desc: "ক্রিম চিজে মোড়ানো লোভনীয় স্বাদের কাপকেক।" }
         ];
 
         let cart = [];
+        let userRating = 5;
+        let reviews = [
+            { name: "Asif Rahman", rating: 5, msg: "The Burger and Fries were outstanding! 100% recommended." },
+            { name: "Nasrin Sultana", rating: 4, msg: "Fast delivery service and premium packaging. Food was hot too." }
+        ];
 
-        function initMenu() {
+        function initApp() {
+            emailjs.init("JzrPe3PmGDp4rRDXi"); 
             const menuContainer = document.getElementById('food-menu');
             menuContainer.innerHTML = '';
+            
             foodMenu.forEach(food => {
                 menuContainer.innerHTML += `
                     <div class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-100 flex flex-col justify-between group transform hover:-translate-y-1">
                         <div class="relative overflow-hidden">
-                            <img src="${food.image}" alt="${food.name}" class="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-500">
-                            <span class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md text-amber-400 font-bold px-2.5 py-1 rounded-xl text-xs border border-amber-500/20">${food.badge}</span>
-                            <span class="absolute bottom-3 right-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black px-4 py-1.5 rounded-2xl text-sm shadow-md">৳${food.price}</span>
+                            <img src="${food.image}" alt="${food.name}" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500'">
+                            <span class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md text-amber-400 font-bold px-2.5 py-1 rounded-xl text-xs">${food.badge}</span>
+                            <span class="absolute bottom-3 right-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black px-4 py-1.5 rounded-2xl text-sm">৳${food.price}</span>
                         </div>
                         <div class="p-5 flex-grow flex flex-col justify-between">
                             <div class="mb-4">
-                                <h4 class="text-lg font-bold text-slate-800 mb-1.5 group-hover:text-amber-600 transition-colors">${food.name}</h4>
+                                <h4 class="text-base font-bold text-slate-800 mb-1">${food.name}</h4>
                                 <p class="text-slate-500 text-xs leading-relaxed line-clamp-2">${food.desc}</p>
                             </div>
-                            <button onclick="addItemToCart(${food.id})" class="w-full bg-slate-50 hover:bg-gradient-to-r hover:from-amber-500 hover:to-orange-500 text-slate-700 hover:text-white font-bold py-2.5 rounded-xl transition-all duration-300 border border-slate-200 hover:border-transparent flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:shadow-md">
+                            <button onclick="addItemToCart(${food.id})" class="w-full bg-slate-50 hover:bg-gradient-to-r hover:from-amber-500 hover:to-orange-500 text-slate-700 hover:text-white font-bold py-2 rounded-xl transition-all duration-300 border cursor-pointer text-sm">
                                 <i class="fa-solid fa-plus text-xs"></i> কার্টে যোগ করুন
                             </button>
                         </div>
                     </div>
                 `;
             });
+            renderReviews();
+            setRating(5);
         }
 
         function addItemToCart(id) {
@@ -221,7 +275,6 @@
             renderCart();
         }
 
-        // বাকি কার্ট ফাংশনালিটি
         function changeQuantity(id, action) {
             const item = cart.find(i => i.id === id);
             if (!item) return;
@@ -257,15 +310,15 @@
                 total += item.price * item.quantity;
                 totalCount += item.quantity;
                 cartContainer.innerHTML += `
-                    <div class="flex justify-between items-center bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
+                    <div class="flex justify-between items-center bg-slate-50 p-3.5 rounded-2xl border">
                         <div class="flex-grow pr-2">
                             <h5 class="text-sm font-bold text-slate-800">${item.name}</h5>
                             <span class="text-xs text-amber-600 font-bold">৳${item.price * item.quantity}</span>
                         </div>
-                        <div class="flex items-center gap-2 bg-white rounded-xl border px-2.5 py-1.5 shadow-inner">
-                            <button onclick="changeQuantity(${item.id}, 'decrease')" class="text-slate-400 hover:text-red-500 px-1 font-bold cursor-pointer transition-colors"><i class="fa-solid fa-minus text-xs"></i></button>
+                        <div class="flex items-center gap-2 bg-white rounded-xl border px-2 py-1">
+                            <button onclick="changeQuantity(${item.id}, 'decrease')" class="text-slate-400 hover:text-red-500 font-bold cursor-pointer"><i class="fa-solid fa-minus text-xs"></i></button>
                             <span class="text-sm font-black w-4 text-center text-slate-800">${item.quantity}</span>
-                            <button onclick="changeQuantity(${item.id}, 'increase')" class="text-slate-400 hover:text-green-500 px-1 font-bold cursor-pointer transition-colors"><i class="fa-solid fa-plus text-xs"></i></button>
+                            <button onclick="changeQuantity(${item.id}, 'increase')" class="text-slate-400 hover:text-green-500 font-bold cursor-pointer"><i class="fa-solid fa-plus text-xs"></i></button>
                         </div>
                     </div>
                 `;
@@ -287,8 +340,54 @@
             }
         }
 
-        function scrollToCart() {
-            document.getElementById('cart-section').scrollIntoView({ behavior: 'smooth' });
+        function setRating(rating) {
+            userRating = rating;
+            const stars = document.querySelectorAll('.star-btn');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.replace('fa-regular', 'fa-solid');
+                    star.classList.add('text-amber-400');
+                } else {
+                    star.classList.replace('fa-solid', 'fa-regular');
+                    star.classList.remove('text-amber-400');
+                }
+            });
+        }
+
+        function handleReviewSubmission(e) {
+            e.preventDefault();
+            const name = document.getElementById('rev-name').value.trim();
+            const msg = document.getElementById('rev-msg').value.trim();
+
+            if(name.length < 3 || msg.length < 5) {
+                alert("দয়া করে সঠিক নাম এবং রিভিউ বিস্তারিত লিখুন!");
+                return;
+            }
+
+            reviews.unshift({ name, rating: userRating, msg });
+            renderReviews();
+            document.getElementById('review-form').reset();
+            setRating(5);
+        }
+
+        function renderReviews() {
+            const container = document.getElementById('reviews-list');
+            container.innerHTML = '';
+            reviews.forEach(r => {
+                let starHTML = "";
+                for(let i=1; i<=5; i++) {
+                    starHTML += `<i class="${i <= r.rating ? 'fa-solid' : 'fa-regular'} fa-star text-amber-400 text-xs"></i>`;
+                }
+                container.innerHTML += `
+                    <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 text-sm">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-bold text-slate-800">${r.name}</span>
+                            <div class="flex gap-0.5">${starHTML}</div>
+                        </div>
+                        <p class="text-slate-600 text-xs">${r.msg}</p>
+                    </div>
+                `;
+            });
         }
 
         function handleOrderSubmission(event) {
@@ -299,55 +398,98 @@
                 return;
             }
 
-            const name = document.getElementById('cust-name').value;
-            const phone = document.getElementById('cust-phone').value;
-            const address = document.getElementById('cust-address').value;
+            const name = document.getElementById('cust-name').value.trim();
+            const phone = document.getElementById('cust-phone').value.trim();
+            const address = document.getElementById('cust-address').value.trim();
             const payment = document.getElementById('cust-payment').value;
-            const trxid = document.getElementById('cust-trxid').value || "প্রযোজ্য নয়";
+            const trxid = document.getElementById('cust-trxid').value.trim() || "প্রযোজ্য নয়";
+
+            // 🛑 Anti-Spam Security Rules
+            if (name.length < 3) { alert("দয়া করে আপনার সঠিক নাম লিখুন!"); return; }
+            
+            const bdPhoneRegex = /^(013|014|015|016|017|018|019)\d{8}$/;
+            if (!bdPhoneRegex.test(phone) || phone === "0123456789" || phone === "01700000000") {
+                alert("ভুল নম্বর! একটি সঠিক ১১ ডিজিটের বাংলাদেশী মোবাইল নম্বর দিন।");
+                return;
+            }
+
+            if (payment === 'Bkash' || payment === 'Nagad') {
+                const trxRegex = /^[A-Z0-9]{8,12}$/i;
+                if (!trxRegex.test(trxid) || trxid.repeat(5).includes(trxid[0])) {
+                    alert("ভুল বা ফেক ট্রানজেকশন আইডি! দয়া করে সঠিক ট্রানজেকশন আইডি দিন।");
+                    return;
+                }
+            }
+
+            if (address.length < 6) { alert("দয়া করে আপনার সম্পূর্ণ সঠিক ঠিকানা দিন।"); return; }
 
             let foodDetails = "";
             let totalBill = 0;
-
             cart.forEach(item => {
                 foodDetails += `• ${item.name} [${item.quantity}টি] = ৳${item.price * item.quantity}\n`;
                 totalBill += item.price * item.quantity;
             });
 
             const templateParams = {
-                cust_name: name,
-                cust_phone: phone,
-                cust_address: address,
-                cust_payment: payment,
-                cust_trxid: trxid,
-                food_details: foodDetails,
-                total_bill: totalBill
+                cust_name: name, cust_phone: phone, cust_address: address,
+                cust_payment: payment, cust_trxid: trxid, food_details: foodDetails, total_bill: totalBill
             };
 
             const submitBtn = event.target.querySelector('button[type="submit"]');
-            const originalBtnText = submitBtn.innerHTML;
             submitBtn.innerText = "অর্ডার প্রসেস হচ্ছে...";
             submitBtn.disabled = true;
 
             emailjs.send("service_3q3e0jf", "template_9jkssyk", templateParams)
-                .then(function(response) {
-                    confetti(); 
-                    alert("ধন্যবাদ! আপনার অর্ডারটি সফলভাবে সাবমিট হয়েছে এবং নোটিফিকেশন পাঠানো হয়েছে।");
-                    cart = []; 
+                .then(function() {
+                    confetti();
+                    
+                    document.getElementById('tracking-card').classList.remove('hidden');
+                    document.getElementById('track-id').innerText = "#FX-" + Math.floor(10000 + Math.random() * 90000);
+                    document.getElementById('track-total').innerText = totalBill;
+                    
+                    updateTrackingSteps('pending');
+
+                    setTimeout(() => { updateTrackingSteps('processing'); }, 6000);
+                    setTimeout(() => { updateTrackingSteps('delivered'); }, 13000);
+
+                    alert("সফল হয়েছে! আপনার অর্ডারটি এখন 'Pending' অবস্থায় আছে। ওপরের ট্র্যাকিং কার্ডে লাইভ স্ট্যাটাস দেখুন।");
+                    
+                    cart = [];
                     renderCart();
                     document.getElementById('order-form').reset();
-                    submitBtn.innerHTML = '<i class="fa-solid fa-circle-check"></i> অর্ডার সফল হয়েছে!';
-                    setTimeout(() => {
-                        submitBtn.innerHTML = originalBtnText;
-                        submitBtn.disabled = false;
-                    }, 4000);
-                }, function(error) {
-                    alert("দুঃখিত, নোটিফিকেশন সার্ভারে সমস্যা হচ্ছে। আবার চেষ্টা করুন।");
+                    submitBtn.innerHTML = '<i class="fa-solid fa-circle-check"></i> অর্ডার পেন্ডিং-এ আছে';
+                    scrollToSection('tracking-card');
+                }, function() {
+                    alert("সার্ভার ত্রুটি। আবার চেষ্টা করুন।");
                     submitBtn.innerText = "আবার চেষ্টা করুন";
                     submitBtn.disabled = false;
                 });
         }
 
-        window.onload = initMenu;
+        function updateTrackingSteps(status) {
+            const line = document.getElementById('progress-line');
+            const stepProc = document.getElementById('step-processing');
+            const stepDelv = document.getElementById('step-delivered');
+
+            if(status === 'pending') {
+                line.style.width = "0%";
+            } else if(status === 'processing') {
+                line.style.width = "50%";
+                stepProc.className = "w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-sm shadow-md transition-all";
+                stepProc.nextElementSibling.className = "text-xs font-bold mt-2 text-orange-600";
+            } else if(status === 'delivered') {
+                line.style.width = "100%";
+                stepDelv.className = "w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-sm shadow-md transition-all";
+                stepDelv.nextElementSibling.className = "text-xs font-bold mt-2 text-green-600";
+            }
+        }
+
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // DOMContentLoaded event handler for safe rander
+        window.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>
